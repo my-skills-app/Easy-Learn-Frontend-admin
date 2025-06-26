@@ -1,0 +1,2146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduAdmin - Modern Education Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+    <style>
+        /* ========== GLOBAL STYLES ========== */
+        :root {
+            /* Light Theme Variables */
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --secondary: #7209b7;
+            --accent: #3a0ca3;
+            --success: #4cc9f0;
+            --text: #212121;
+            --text-secondary: #757575;
+            --background: #f8f9fa;
+            --card-bg: #ffffff;
+            --sidebar-bg: #ffffff;
+            --navbar-bg: #ffffff;
+            --border: #e0e0e0;
+            --shadow: rgba(149, 157, 165, 0.2);
+            --danger: #f72585;
+            --warning: #f8961e;
+            --info: #4895ef;
+            
+            /* Spacing */
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            --spacing-xxl: 48px;
+            
+            /* Border radius */
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+            
+            /* Transition */
+            --transition: all 0.3s ease;
+        }
+
+        [data-theme="dark"] {
+            --primary: #4895ef;
+            --primary-light: #4cc9f0;
+            --secondary: #b5179e;
+            --accent: #3a0ca3;
+            --success: #4cc9f0;
+            --text: #f5f5f5;
+            --text-secondary: #b0b0b0;
+            --background: #121212;
+            --card-bg: #1e1e1e;
+            --sidebar-bg: #1a1a1a;
+            --navbar-bg: #1a1a1a;
+            --border: #333333;
+            --shadow: rgba(0, 0, 0, 0.3);
+            --danger: #f72585;
+            --warning: #f8961e;
+            --info: #4895ef;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+            height: 100vh;
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* ========== SIDEBAR STYLES ========== */
+        .sidebar {
+            width: 260px;
+            background-color: var(--sidebar-bg);
+            padding: var(--spacing-lg) 0;
+            box-shadow: 0 0 20px var(--shadow);
+            z-index: 100;
+            transition: var(--transition);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar.collapsed {
+            width: 80px;
+        }
+
+        .logo-container {
+            padding: 0 var(--spacing-lg) var(--spacing-lg);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .toggle-btn {
+            background: none;
+            border: none;
+            color: var(--text);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: var(--spacing-sm);
+            border-radius: var(--radius-md);
+        }
+
+        .toggle-btn:hover {
+            background-color: rgba(0,0,0,0.05);
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: var(--spacing-md) 0;
+        }
+
+        .nav-item {
+            margin-bottom: var(--spacing-xs);
+            padding: 0 var(--spacing-md);
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: var(--spacing-md) var(--spacing-lg);
+            text-decoration: none;
+            color: var(--text-secondary);
+            border-radius: var(--radius-md);
+            transition: var(--transition);
+            gap: var(--spacing-md);
+            font-weight: 500;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: linear-gradient(90deg, rgba(67,97,238,0.15) 0%, rgba(114,9,183,0.1) 100%);
+            color: var(--primary);
+        }
+
+        .nav-link.active {
+            border-left: 4px solid var(--primary);
+        }
+
+        .nav-link i {
+            font-size: 1.25rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .nav-text {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .sidebar.collapsed .nav-text {
+            display: none;
+        }
+        
+        /* ========== MAIN CONTENT AREA ========== */
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            transition: var(--transition);
+        }
+
+        .sidebar.collapsed ~ .main-content {
+            margin-left: 80px;
+        }
+        
+        /* ========== NAVBAR STYLES ========== */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-lg) var(--spacing-xl);
+            background-color: var(--navbar-bg);
+            box-shadow: 0 2px 10px var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 90;
+        }
+
+        .search-container {
+            position: relative;
+            flex: 1;
+            max-width: 500px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: var(--spacing-md) var(--spacing-xl);
+            border-radius: 50px;
+            border: 1px solid var(--border);
+            background-color: var(--card-bg);
+            color: var(--text);
+            font-size: 0.9rem;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: var(--spacing-md);
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        .navbar-actions {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-lg);
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: var(--text);
+            font-size: 1.2rem;
+            cursor: pointer;
+            position: relative;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .action-btn:hover {
+            background-color: rgba(0,0,0,0.05);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: var(--danger);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .theme-toggle {
+            position: relative;
+            width: 50px;
+            height: 26px;
+            background-color: var(--border);
+            border-radius: 50px;
+            cursor: pointer;
+        }
+
+        .theme-toggle.active {
+            background-color: var(--primary);
+        }
+
+        .toggle-handle {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 20px;
+            height: 20px;
+            background-color: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+
+        .theme-toggle.active .toggle-handle {
+            transform: translateX(24px);
+        }
+
+        .profile {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .profile-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            background-color: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .profile-name {
+            font-weight: 500;
+        }
+
+        .profile-dropdown {
+            position: absolute;
+            top: 120%;
+            right: 0;
+            background-color: var(--card-bg);
+            border-radius: var(--radius-md);
+            box-shadow: 0 5px 15px var(--shadow);
+            width: 200px;
+            overflow: hidden;
+            z-index: 100;
+            display: none;
+        }
+
+        .profile:hover .profile-dropdown {
+            display: block;
+        }
+
+        .dropdown-item {
+            padding: var(--spacing-md) var(--spacing-lg);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            text-decoration: none;
+            color: var(--text);
+            transition: var(--transition);
+        }
+
+        .dropdown-item:hover {
+            background-color: rgba(0,0,0,0.05);
+        }
+
+        .dropdown-item i {
+            width: 20px;
+            text-align: center;
+        }
+        
+        /* ========== CONTENT AREA ========== */
+        .content {
+            padding: var(--spacing-xl);
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .page-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .btn {
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-radius: var(--radius-md);
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+        
+        /* ========== DASHBOARD STYLES ========== */
+        /* Stats Cards */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .stat-card {
+            background-color: var(--card-bg);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            box-shadow: 0 4px 12px var(--shadow);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px var(--shadow);
+        }
+
+        .stat-icon {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 80px;
+            height: 80px;
+            opacity: 0.1;
+            font-size: 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: var(--spacing-sm) 0;
+        }
+
+        .stat-title {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .stat-change {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            margin-top: var(--spacing-sm);
+            font-size: 0.9rem;
+        }
+
+        .change-positive {
+            color: var(--success);
+        }
+
+        .change-negative {
+            color: var(--danger);
+        }
+
+        /* Charts Container */
+        .charts-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .chart-card {
+            background-color: var(--card-bg);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .chart-wrapper {
+            height: 300px;
+            position: relative;
+        }
+
+        /* Activity Feed */
+        .activity-card {
+            background-color: var(--card-bg);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            box-shadow: 0 4px 12px var(--shadow);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .activity-list {
+            list-style: none;
+        }
+
+        .activity-item {
+            display: flex;
+            padding: var(--spacing-md) 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: var(--spacing-md);
+            flex-shrink: 0;
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-weight: 500;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .activity-time {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        /* ========== COURSES STYLES ========== */
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: var(--spacing-lg);
+        }
+
+        .course-card {
+            background-color: var(--card-bg);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: 0 4px 12px var(--shadow);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px var(--shadow);
+        }
+
+        .course-image {
+            height: 160px;
+            background: linear-gradient(135deg, var(--primary-light), var(--accent));
+            position: relative;
+            overflow: hidden;
+        }
+
+        .course-badge {
+            position: absolute;
+            top: var(--spacing-md);
+            right: var(--spacing-md);
+            background-color: var(--success);
+            color: white;
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .course-content {
+            padding: var(--spacing-lg);
+        }
+
+        .course-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .course-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: var(--spacing-md);
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .course-instructor {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .instructor-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.7rem;
+        }
+
+        .course-price {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--primary);
+        }
+
+        .original-price {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            text-decoration: line-through;
+        }
+
+        .course-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: var(--spacing-md);
+            border-top: 1px solid var(--border);
+        }
+
+        .course-duration {
+            background-color: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .course-status {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .status-published {
+            background-color: var(--success);
+        }
+
+        .status-draft {
+            background-color: var(--warning);
+        }
+        
+        /* ========== STUDENTS STYLES ========== */
+        .students-table-container {
+            background-color: var(--card-bg);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            box-shadow: 0 4px 12px var(--shadow);
+            overflow-x: auto;
+        }
+        
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .table-controls {
+            display: flex;
+            gap: var(--spacing-md);
+        }
+        
+        .table-search {
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            background-color: var(--card-bg);
+            color: var(--text);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            text-align: left;
+            padding: var(--spacing-md);
+            border-bottom: 1px solid var(--border);
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        
+        td {
+            padding: var(--spacing-md);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .student-info {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+        
+        .status-badge {
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .status-active {
+            background-color: rgba(76, 201, 240, 0.1);
+            color: var(--success);
+        }
+        
+        .status-inactive {
+            background-color: rgba(248, 150, 30, 0.1);
+            color: var(--warning);
+        }
+        
+        .action-btn-group {
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+        
+        .action-btn-small {
+            padding: var(--spacing-xs);
+            border-radius: var(--radius-sm);
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+        
+        .action-btn-small:hover {
+            background-color: rgba(0,0,0,0.05);
+        }
+        
+        /* ========== MESSAGES STYLES ========== */
+        .messages-container {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: var(--spacing-lg);
+            height: calc(100vh - 200px);
+        }
+        
+        .message-list {
+            background-color: var(--card-bg);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 4px 12px var(--shadow);
+            overflow-y: auto;
+        }
+        
+        .message-header {
+            padding: var(--spacing-lg);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .message-item {
+            padding: var(--spacing-lg);
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .message-item:hover, .message-item.active {
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+        
+        .message-item-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .message-sender {
+            font-weight: 600;
+        }
+        
+        .message-time {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .message-subject {
+            font-weight: 500;
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .message-preview {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .message-unread {
+            background-color: rgba(67, 97, 238, 0.1);
+        }
+        
+        .unread-badge {
+            background-color: var(--danger);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            margin-left: var(--spacing-sm);
+        }
+        
+        .message-view {
+            background-color: var(--card-bg);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 4px 12px var(--shadow);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .message-view-header {
+            padding: var(--spacing-lg);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .message-view-subject {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .message-view-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+        
+        .message-view-body {
+            padding: var(--spacing-lg);
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        .message-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-lg);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .message-sender-info {
+            display: flex;
+            gap: var(--spacing-md);
+            align-items: center;
+        }
+        
+        .message-content {
+            line-height: 1.8;
+        }
+        
+        /* ========== SETTINGS STYLES ========== */
+        .settings-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-lg);
+        }
+        
+        .settings-card {
+            background-color: var(--card-bg);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+        
+        .settings-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .form-group {
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: var(--spacing-sm);
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: var(--spacing-md);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            background-color: var(--card-bg);
+            color: var(--text);
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+        
+        .switch-container {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+        
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--border);
+            transition: var(--transition);
+            border-radius: 34px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: var(--transition);
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: var(--primary);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+        
+        /* ========== RESPONSIVE DESIGN ========== */
+        @media (max-width: 1200px) {
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .settings-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 80px;
+            }
+            
+            .sidebar .nav-text {
+                display: none;
+            }
+            
+            .main-content {
+                margin-left: 80px;
+            }
+            
+            .stats-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .messages-container {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                position: fixed;
+                width: 260px;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .sidebar .nav-text {
+                display: block;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .navbar {
+                padding: var(--spacing-md);
+                flex-wrap: wrap;
+            }
+            
+            .search-container {
+                max-width: 100%;
+                order: 3;
+                margin-top: var(--spacing-md);
+            }
+            
+            .profile-name {
+                display: none;
+            }
+            
+            .content {
+                padding: var(--spacing-md);
+            }
+            
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: var(--spacing-md);
+            }
+            
+            .courses-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .theme-toggle {
+                transform: scale(0.8);
+            }
+        }
+
+        @media (max-width: 576px) {
+            .navbar-actions {
+                gap: var(--spacing-md);
+            }
+            
+            .chart-card, .activity-card, .settings-card {
+                padding: var(--spacing-md);
+            }
+            
+            .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: var(--spacing-md);
+            }
+            
+            .activity-item {
+                flex-direction: column;
+                gap: var(--spacing-md);
+            }
+            
+            .activity-icon {
+                margin-right: 0;
+            }
+            
+            .btn {
+                padding: var(--spacing-sm) var(--spacing-md);
+                font-size: 0.9rem;
+            }
+        }
+
+        .mobile-toggle {
+            display: none;
+            position: fixed;
+            bottom: var(--spacing-lg);
+            right: var(--spacing-lg);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            z-index: 100;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-toggle {
+                display: flex;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 300px;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(67, 97, 238, 0.2);
+            border-top: 5px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Scroll to top button */
+        .scroll-top {
+            position: fixed;
+            bottom: 80px;
+            right: var(--spacing-lg);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 99;
+        }
+
+        @media (max-width: 768px) {
+            .scroll-top {
+                bottom: 100px;
+                right: var(--spacing-md);
+            }
+        }
+
+        .scroll-top.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Section Animation */
+        .section {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Mobile menu overlay */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 90;
+        }
+        
+        @media (max-width: 768px) {
+            .overlay.active {
+                display: block;
+            }
+        }
+        
+        /* Hidden sections */
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="logo-container">
+                <div class="logo">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span class="logo-text">EduAdmin</span>
+                </div>
+                <button class="toggle-btn" id="sidebar-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+
+            <ul class="nav-links">
+                <li class="nav-item">
+                    <a href="#" class="nav-link active" data-section="dashboard">
+                        <i class="fas fa-home"></i>
+                        <span class="nav-text">Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-section="courses">
+                        <i class="fas fa-book-open"></i>
+                        <span class="nav-text">Courses</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-section="students">
+                        <i class="fas fa-users"></i>
+                        <span class="nav-text">Students</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-section="messages">
+                        <i class="fas fa-envelope"></i>
+                        <span class="nav-text">Messages</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-section="settings">
+                        <i class="fas fa-cog"></i>
+                        <span class="nav-text">Settings</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Overlay for mobile menu -->
+        <div class="overlay" id="overlay"></div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Navbar -->
+            <div class="navbar">
+                <div class="search-container">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" placeholder="Search...">
+                </div>
+
+                <div class="navbar-actions">
+                    <button class="action-btn">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </button>
+                    
+                    <div class="theme-toggle" id="theme-toggle">
+                        <div class="toggle-handle"></div>
+                    </div>
+                    
+                    <div class="profile">
+                        <div class="profile-img">JD</div>
+                        <div class="profile-name">John Doe</div>
+                        <div class="profile-dropdown">
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-user"></i>
+                                <span>Profile</span>
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-cog"></i>
+                                <span>Settings</span>
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-sign-out-alt"></i>
+                                <span>Logout</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="content">
+                <!-- Dashboard Section -->
+                <div class="section" id="dashboard-section">
+                    <div class="page-header">
+                        <h1 class="page-title">Dashboard</h1>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-plus"></i>
+                            New Course
+                        </button>
+                    </div>
+
+                    <!-- Stats Cards -->
+                    <div class="stats-container">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="stat-value">1,248</div>
+                            <div class="stat-title">Total Students</div>
+                            <div class="stat-change change-positive">
+                                <i class="fas fa-arrow-up"></i>
+                                12% from last month
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <div class="stat-value">42</div>
+                            <div class="stat-title">Total Courses</div>
+                            <div class="stat-change change-positive">
+                                <i class="fas fa-arrow-up"></i>
+                                5 new courses
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-dollar-sign"></i>
+                            </div>
+                            <div class="stat-value">$24,560</div>
+                            <div class="stat-title">Total Earnings</div>
+                            <div class="stat-change change-positive">
+                                <i class="fas fa-arrow-up"></i>
+                                18% from last month
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-percentage"></i>
+                            </div>
+                            <div class="stat-value">78%</div>
+                            <div class="stat-title">Completion Rate</div>
+                            <div class="stat-change change-negative">
+                                <i class="fas fa-arrow-down"></i>
+                                2% from last month
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts -->
+                    <div class="charts-container">
+                        <div class="chart-card">
+                            <div class="card-header">
+                                <h3 class="card-title">Earnings Overview</h3>
+                                <div class="chart-actions">
+                                    <button class="action-btn">
+                                        <i class="fas fa-ellipsis-h"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="chart-wrapper">
+                                <canvas id="earnings-chart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="chart-card">
+                            <div class="card-header">
+                                <h3 class="card-title">Course Categories</h3>
+                                <div class="chart-actions">
+                                    <button class="action-btn">
+                                        <i class="fas fa-ellipsis-h"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="chart-wrapper">
+                                <canvas id="categories-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="activity-card">
+                        <div class="card-header">
+                            <h3 class="card-title">Recent Activity</h3>
+                            <button class="btn">
+                                View All
+                            </button>
+                        </div>
+                        <ul class="activity-list">
+                            <li class="activity-item">
+                                <div class="activity-icon">
+                                    <i class="fas fa-user-plus"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <div class="activity-title">New student enrolled in Web Development Course</div>
+                                    <div class="activity-time">10 minutes ago</div>
+                                </div>
+                            </li>
+                            <li class="activity-item">
+                                <div class="activity-icon">
+                                    <i class="fas fa-video"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <div class="activity-title">You uploaded a new lecture in React Masterclass</div>
+                                    <div class="activity-time">2 hours ago</div>
+                                </div>
+                            </li>
+                            <li class="activity-item">
+                                <div class="activity-icon">
+                                    <i class="fas fa-comment"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <div class="activity-title">Sarah Johnson commented on your post</div>
+                                    <div class="activity-time">5 hours ago</div>
+                                </div>
+                            </li>
+                            <li class="activity-item">
+                                <div class="activity-icon">
+                                    <i class="fas fa-certificate"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <div class="activity-title">Course "Data Science Fundamentals" completed by 15 students</div>
+                                    <div class="activity-time">Yesterday</div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Courses Section (initially hidden) -->
+                <div class="section hidden" id="courses-section">
+                    <div class="page-header">
+                        <h1 class="page-title">Courses</h1>
+                        <button class="btn btn-primary" id="add-course-btn">
+                            <i class="fas fa-plus"></i>
+                            Add Course
+                        </button>
+                    </div>
+
+                    <div class="courses-grid">
+                        <!-- Course cards will be dynamically generated here -->
+                    </div>
+                </div>
+
+                <!-- Students Section (initially hidden) -->
+                <div class="section hidden" id="students-section">
+                    <div class="page-header">
+                        <h1 class="page-title">Students</h1>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-plus"></i>
+                            Add Student
+                        </button>
+                    </div>
+
+                    <div class="students-table-container">
+                        <div class="table-header">
+                            <h3 class="card-title">Student Management</h3>
+                            <div class="table-controls">
+                                <input type="text" class="table-search" placeholder="Search students...">
+                                <select class="form-control">
+                                    <option>All Courses</option>
+                                    <option>Web Development</option>
+                                    <option>Data Science</option>
+                                    <option>UX Design</option>
+                                </select>
+                            </div>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Email</th>
+                                    <th>Course</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="student-info">
+                                            <div class="profile-img" style="width: 36px; height: 36px;">ES</div>
+                                            <span>Emily Smith</span>
+                                        </div>
+                                    </td>
+                                    <td>emily@example.com</td>
+                                    <td>Web Development</td>
+                                    <td>
+                                        <span class="status-badge status-active">Active</span>
+                                    </td>
+                                    <td>
+                                        <div class="action-btn-group">
+                                            <button class="action-btn-small">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="action-btn-small">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="student-info">
+                                            <div class="profile-img" style="width: 36px; height: 36px;">MJ</div>
+                                            <span>Michael Johnson</span>
+                                        </div>
+                                    </td>
+                                    <td>michael@example.com</td>
+                                    <td>Data Science</td>
+                                    <td>
+                                        <span class="status-badge status-active">Active</span>
+                                    </td>
+                                    <td>
+                                        <div class="action-btn-group">
+                                            <button class="action-btn-small">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="action-btn-small">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="student-info">
+                                            <div class="profile-img" style="width: 36px; height: 36px;">RW</div>
+                                            <span>Robert Williams</span>
+                                        </div>
+                                    </td>
+                                    <td>robert@example.com</td>
+                                    <td>UX Design</td>
+                                    <td>
+                                        <span class="status-badge status-inactive">Inactive</span>
+                                    </td>
+                                    <td>
+                                        <div class="action-btn-group">
+                                            <button class="action-btn-small">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="action-btn-small">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Messages Section (initially hidden) -->
+                <div class="section hidden" id="messages-section">
+                    <div class="page-header">
+                        <h1 class="page-title">Messages</h1>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-plus"></i>
+                            New Message
+                        </button>
+                    </div>
+                    
+                    <div class="messages-container">
+                        <div class="message-list">
+                            <div class="message-header">
+                                <h3>Inbox</h3>
+                            </div>
+                            <div class="message-item message-unread active">
+                                <div class="message-item-header">
+                                    <div class="message-sender">
+                                        Sarah Johnson <span class="unread-badge">1</span>
+                                    </div>
+                                    <div class="message-time">10:30 AM</div>
+                                </div>
+                                <div class="message-subject">Question about the assignment</div>
+                                <div class="message-preview">Hi, I have a question about the assignment due next week. Could you clarify the requirements for...</div>
+                            </div>
+                            <div class="message-item">
+                                <div class="message-item-header">
+                                    <div class="message-sender">Alex Rodriguez</div>
+                                    <div class="message-time">Yesterday</div>
+                                </div>
+                                <div class="message-subject">Technical issue with the platform</div>
+                                <div class="message-preview">Hello, I'm experiencing technical difficulties with the video player. It keeps buffering even though my internet connection...</div>
+                            </div>
+                            <div class="message-item">
+                                <div class="message-item-header">
+                                    <div class="message-sender">Campus Administration</div>
+                                    <div class="message-time">2 days ago</div>
+                                </div>
+                                <div class="message-subject">Upcoming maintenance schedule</div>
+                                <div class="message-preview">Dear instructors, we wanted to inform you about the scheduled maintenance this weekend. The platform will be...</div>
+                            </div>
+                        </div>
+                        
+                        <div class="message-view">
+                            <div class="message-view-header">
+                                <div class="message-view-subject">Question about the assignment</div>
+                                <div class="message-view-actions">
+                                    <button class="action-btn">
+                                        <i class="fas fa-reply"></i>
+                                    </button>
+                                    <button class="action-btn">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="message-view-body">
+                                <div class="message-info">
+                                    <div class="message-sender-info">
+                                        <div class="profile-img" style="width: 40px; height: 40px;">SJ</div>
+                                        <div>
+                                            <div class="message-sender">Sarah Johnson</div>
+                                            <div class="message-time">sarah.johnson@example.com</div>
+                                        </div>
+                                    </div>
+                                    <div class="message-time">10:30 AM, Today</div>
+                                </div>
+                                <div class="message-content">
+                                    <p>Hi Professor,</p>
+                                    <p>I hope this message finds you well. I'm currently working on the assignment that's due next week, and I have a few questions regarding the requirements.</p>
+                                    <p>In section 3 of the assignment, it mentions that we need to implement the sorting algorithm, but it doesn't specify which algorithm we should use. Could you clarify if we can choose any sorting algorithm or if there's a specific one you want us to implement?</p>
+                                    <p>Also, for the bonus points section, are we allowed to use external libraries, or should everything be implemented from scratch?</p>
+                                    <p>Thank you for your time and guidance. I'm really enjoying the course so far!</p>
+                                    <p>Best regards,<br>Sarah Johnson</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Settings Section (initially hidden) -->
+                <div class="section hidden" id="settings-section">
+                    <div class="page-header">
+                        <h1 class="page-title">Settings</h1>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-save"></i>
+                            Save Changes
+                        </button>
+                    </div>
+                    
+                    <div class="settings-container">
+                        <div class="settings-card">
+                            <h3 class="settings-title">Profile Settings</h3>
+                            <div class="form-group">
+                                <label class="form-label">Profile Photo</label>
+                                <div style="display: flex; align-items: center; gap: var(--spacing-md);">
+                                    <div class="profile-img" style="width: 80px; height: 80px;">JD</div>
+                                    <button class="btn">Change Photo</button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Full Name</label>
+                                <input type="text" class="form-control" value="John Doe">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Email Address</label>
+                                <input type="email" class="form-control" value="john.doe@example.com">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Bio</label>
+                                <textarea class="form-control" rows="4">Senior instructor specializing in web development and data science.</textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="settings-card">
+                            <h3 class="settings-title">Account Security</h3>
+                            <div class="form-group">
+                                <label class="form-label">Current Password</label>
+                                <input type="password" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">New Password</label>
+                                <input type="password" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Confirm New Password</label>
+                                <input type="password" class="form-control">
+                            </div>
+                        </div>
+                        
+                        <div class="settings-card">
+                            <h3 class="settings-title">Notification Preferences</h3>
+                            <div class="form-group">
+                                <div class="switch-container">
+                                    <label class="form-label">Email Notifications</label>
+                                    <label class="switch">
+                                        <input type="checkbox" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="switch-container">
+                                    <label class="form-label">Push Notifications</label>
+                                    <label class="switch">
+                                        <input type="checkbox" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="switch-container">
+                                    <label class="form-label">SMS Notifications</label>
+                                    <label class="switch">
+                                        <input type="checkbox">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="settings-card">
+                            <h3 class="settings-title">Appearance</h3>
+                            <div class="form-group">
+                                <div class="switch-container">
+                                    <label class="form-label">Dark Mode</label>
+                                    <label class="switch">
+                                        <input type="checkbox" id="dark-mode-toggle">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Language</label>
+                                <select class="form-control">
+                                    <option>English</option>
+                                    <option>Spanish</option>
+                                    <option>French</option>
+                                    <option>German</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Time Zone</label>
+                                <select class="form-control">
+                                    <option>(GMT-12:00) International Date Line West</option>
+                                    <option>(GMT-08:00) Pacific Time (US & Canada)</option>
+                                    <option selected>(GMT-05:00) Eastern Time (US & Canada)</option>
+                                    <option>(GMT) Greenwich Mean Time</option>
+                                    <option>(GMT+01:00) Central European Time</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Toggle Button -->
+        <div class="mobile-toggle" id="mobile-toggle">
+            <i class="fas fa-bars"></i>
+        </div>
+
+        <!-- Scroll to Top Button -->
+        <div class="scroll-top" id="scroll-top">
+            <i class="fas fa-arrow-up"></i>
+        </div>
+    </div>
+
+    <script>
+        // ================== APP.JS ==================
+        // DOM Elements
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const mobileToggle = document.getElementById('mobile-toggle');
+        const themeToggle = document.getElementById('theme-toggle');
+        const scrollTopBtn = document.getElementById('scroll-top');
+        const navLinks = document.querySelectorAll('.nav-link');
+        const sections = document.querySelectorAll('.section');
+        const overlay = document.getElementById('overlay');
+        const darkModeToggle = document.getElementById('dark-mode-toggle');
+        
+        // Check for saved theme preference
+        const savedTheme = localStorage.getItem('theme');
+        const savedSidebarState = localStorage.getItem('sidebarCollapsed');
+        
+        // Apply saved preferences
+        if (savedTheme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            themeToggle.classList.add('active');
+            darkModeToggle.checked = true;
+        }
+        
+        if (savedSidebarState === 'true') {
+            sidebar.classList.add('collapsed');
+        }
+        
+        // Sidebar toggle
+        sidebarToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('collapsed');
+            localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+        });
+        
+        // Mobile sidebar toggle
+        mobileToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+            document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
+        });
+        
+        // Close sidebar when clicking overlay
+        overlay.addEventListener('click', () => {
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+        
+        // Theme toggle
+        themeToggle.addEventListener('click', () => {
+            toggleTheme();
+        });
+        
+        // Settings dark mode toggle
+        darkModeToggle.addEventListener('change', () => {
+            toggleTheme();
+        });
+        
+        function toggleTheme() {
+            themeToggle.classList.toggle('active');
+            if (themeToggle.classList.contains('active')) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                darkModeToggle.checked = true;
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+                darkModeToggle.checked = false;
+            }
+        }
+        
+        // Navigation
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                // Remove active class from all links
+                navLinks.forEach(l => l.classList.remove('active'));
+                
+                // Add active class to clicked link
+                link.classList.add('active');
+                
+                // Get target section
+                const targetSection = link.getAttribute('data-section');
+                
+                // Hide all sections
+                sections.forEach(section => {
+                    section.classList.add('hidden');
+                });
+                
+                // Show target section
+                document.getElementById(`${targetSection}-section`).classList.remove('hidden');
+                
+                // Close sidebar on mobile
+                if (window.innerWidth < 768) {
+                    sidebar.classList.remove('active');
+                    overlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+                
+                // Scroll to top
+                window.scrollTo(0, 0);
+            });
+        });
+        
+        // Scroll to top button
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                scrollTopBtn.classList.add('visible');
+            } else {
+                scrollTopBtn.classList.remove('visible');
+            }
+        });
+        
+        scrollTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            const profile = document.querySelector('.profile');
+            if (!profile.contains(e.target)) {
+                document.querySelector('.profile-dropdown').style.display = 'none';
+            }
+        });
+        
+        // ================== DASHBOARD.JS ==================
+        // Initialize charts
+        function initCharts() {
+            // Earnings Chart
+            const earningsCtx = document.getElementById('earnings-chart').getContext('2d');
+            const gradient = earningsCtx.createLinearGradient(0, 0, 0, 300);
+            gradient.addColorStop(0, 'rgba(67, 97, 238, 0.4)');
+            gradient.addColorStop(1, 'rgba(67, 97, 238, 0.05)');
+            
+            new Chart(earningsCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+                    datasets: [{
+                        label: 'Earnings',
+                        data: [4500, 5200, 4800, 6100, 7200, 8900, 9300],
+                        backgroundColor: gradient,
+                        borderColor: 'var(--primary)',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#fff',
+                        pointBorderWidth: 3,
+                        pointRadius: 5,
+                        pointHoverRadius: 7,
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'var(--card-bg)',
+                            titleColor: 'var(--text)',
+                            bodyColor: 'var(--text)',
+                            borderColor: 'var(--border)',
+                            borderWidth: 1,
+                            padding: 12,
+                            displayColors: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0,0,0,0.05)'
+                            },
+                            ticks: {
+                                color: 'var(--text-secondary)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: 'var(--text-secondary)'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Categories Chart
+            const categoriesCtx = document.getElementById('categories-chart').getContext('2d');
+            new Chart(categoriesCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Development', 'Design', 'Business', 'Marketing', 'Photography'],
+                    datasets: [{
+                        data: [35, 20, 15, 18, 12],
+                        backgroundColor: [
+                            '#4361ee',
+                            '#4895ef',
+                            '#7209b7',
+                            '#f72585',
+                            '#4cc9f0'
+                        ],
+                        borderWidth: 0,
+                        hoverOffset: 15
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: 'var(--text)',
+                                padding: 20,
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'var(--card-bg)',
+                            titleColor: 'var(--text)',
+                            bodyColor: 'var(--text)',
+                            borderColor: 'var(--border)',
+                            borderWidth: 1,
+                            padding: 12
+                        }
+                    }
+                }
+            });
+        }
+        
+        // ================== COURSES.JS ==================
+        // Generate courses
+        function generateCourses() {
+            const coursesGrid = document.querySelector('.courses-grid');
+            coursesGrid.innerHTML = '';
+            
+            const courses = [
+                { 
+                    title: "Web Development Bootcamp", 
+                    instructor: "Alex Johnson", 
+                    price: "$89.99", 
+                    originalPrice: "$129.99", 
+                    duration: "6 months", 
+                    status: "published",
+                    badge: "Featured"
+                },
+                { 
+                    title: "Data Science Fundamentals", 
+                    instructor: "Sarah Williams", 
+                    price: "$79.99", 
+                    originalPrice: "$99.99", 
+                    duration: "4 months", 
+                    status: "published"
+                },
+                { 
+                    title: "UX/UI Design Masterclass", 
+                    instructor: "Michael Brown", 
+                    price: "$69.99", 
+                    originalPrice: "$89.99", 
+                    duration: "3 months", 
+                    status: "published"
+                },
+                { 
+                    title: "Mobile App Development", 
+                    instructor: "Jennifer Davis", 
+                    price: "$94.99", 
+                    originalPrice: "$119.99", 
+                    duration: "5 months", 
+                    status: "draft"
+                },
+                { 
+                    title: "Digital Marketing Strategies", 
+                    instructor: "Robert Taylor", 
+                    price: "$59.99", 
+                    originalPrice: "$79.99", 
+                    duration: "2 months", 
+                    status: "published"
+                },
+                { 
+                    title: "Python for Beginners", 
+                    instructor: "David Wilson", 
+                    price: "$49.99", 
+                    duration: "8 weeks", 
+                    status: "published",
+                    badge: "Popular"
+                }
+            ];
+            
+            courses.forEach(course => {
+                const courseCard = document.createElement('div');
+                courseCard.className = 'course-card';
+                
+                courseCard.innerHTML = `
+                    <div class="course-image">
+                        ${course.badge ? `<div class="course-badge">${course.badge}</div>` : ''}
+                    </div>
+                    <div class="course-content">
+                        <h3 class="course-title">${course.title}</h3>
+                        <div class="course-meta">
+                            <div class="course-instructor">
+                                <div class="instructor-avatar">${course.instructor.split(' ').map(n => n[0]).join('')}</div>
+                                <span>${course.instructor}</span>
+                            </div>
+                            <div class="course-price">
+                                ${course.originalPrice ? `<span class="original-price">${course.originalPrice}</span>` : ''}
+                                ${course.price}
+                            </div>
+                        </div>
+                        <div class="course-footer">
+                            <div class="course-duration">${course.duration}</div>
+                            <div class="course-status">
+                                <div class="status-dot status-${course.status}"></div>
+                                <span>${course.status.charAt(0).toUpperCase() + course.status.slice(1)}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                coursesGrid.appendChild(courseCard);
+            });
+        }
+        
+        // Add course button
+        document.getElementById('add-course-btn')?.addEventListener('click', () => {
+            alert('Course creation form would open here');
+        });
+        
+        // ================== INITIALIZATION ==================
+        // Initialize the dashboard
+        window.addEventListener('DOMContentLoaded', () => {
+            generateCourses();
+            initCharts();
+        });
+    </script>
+</body>
+</html>
