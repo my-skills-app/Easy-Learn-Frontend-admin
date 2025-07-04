@@ -1,0 +1,181 @@
+{
+	"info": {
+		"_postman_id": "30b05406-f75b-4e5e-8fc0-5e812cea9559",
+		"name": "Ai-image-genrat-bakend",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "42472887"
+	},
+	"item": [
+		{
+			"name": "auth-service",
+			"item": [
+				{
+					"name": "ragester_api",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "login_api",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "coin-service",
+			"item": [
+				{
+					"name": "user_coin_balence",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NjZjMzFmZjQwZjljNjUzNTZlNjg2MSIsImlhdCI6MTc1MTU2NTA4NywiZXhwIjoxNzU0MTU3MDg3fQ.ZXCg7SC67bGmDY0tFzSQ8ols0x5ux94vkTdbfwtM_iI",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"amount\": 100,\r\n  \"source\": \"ad_watch\",  // or any other source identifier\r\n  \"adId\": \"optional_ad_id_here\"  // still optional\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8000/api/coin/earn",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"coin",
+								"earn"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get user coin balence",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Profile",
+			"item": [
+				{
+					"name": "get profile",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "update_profile",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "image genrat",
+			"item": [
+				{
+					"name": "genratimage",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "history image  genrate",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Earn Coin",
+			"item": [
+				{
+					"name": "ads watch coin",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "server health",
+			"item": [
+				{
+					"name": "get server helth",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://ai-image-app-multi-service-architecture.onrender.com/health",
+							"protocol": "https",
+							"host": [
+								"ai-image-app-multi-service-architecture",
+								"onrender",
+								"com"
+							],
+							"path": [
+								"health"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "stablity_api_balence",
+			"item": [
+				{
+					"name": "New Request",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
